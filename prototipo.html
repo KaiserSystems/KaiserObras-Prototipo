@@ -1,0 +1,1773 @@
+<!doctype html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>KaiserAdmin - Dashboard</title>
+
+        <!-- Tailwind CSS for styling -->
+        <script src="https://cdn.tailwindcss.com"></script>
+
+        <!-- Google Fonts: Inter -->
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+            rel="stylesheet"
+        />
+
+        <!-- Chart.js for beautiful charts -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+
+        <style>
+            /* Light Theme is default */
+            body {
+                font-family: 'Inter', sans-serif;
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+                background-color: #f8fafc;
+                transition:
+                    background-color 0.3s ease,
+                    color 0.3s ease;
+            }
+            ::-webkit-scrollbar {
+                width: 8px;
+            }
+            ::-webkit-scrollbar-track {
+                background: #f1f5f9;
+            }
+            ::-webkit-scrollbar-thumb {
+                background: #cbd5e1;
+                border-radius: 10px;
+            }
+            ::-webkit-scrollbar-thumb:hover {
+                background: #94a3b8;
+            }
+
+            .card-hover {
+                transition:
+                    transform 0.2s ease-in-out,
+                    box-shadow 0.2s ease-in-out;
+            }
+            .card-hover:hover {
+                transform: translateY(-5px);
+                box-shadow:
+                    0 10px 15px -3px rgb(0 0 0 / 0.1),
+                    0 4px 6px -4px rgb(0 0 0 / 0.1);
+            }
+            .nav-link {
+                transition:
+                    background-color 0.2s ease-in-out,
+                    color 0.2s ease-in-out;
+            }
+            .nav-link[data-active='true'] {
+                background-color: #f1f5f9;
+                color: #0f172a;
+                font-weight: 600;
+            }
+            .sidebar-text {
+                transition:
+                    opacity 0.2s ease-in-out,
+                    width 0.2s ease-in-out;
+                overflow: hidden;
+                white-space: nowrap;
+            }
+            #sidebar.w-20 .nav-link:hover .tooltip {
+                opacity: 1;
+                visibility: visible;
+                transform: translateX(0);
+                transition-delay: 0.3s;
+                z-index: 50;
+            }
+
+            /* ===== DARK THEME STYLES ===== */
+            html[data-theme='dark'] body {
+                background-color: #000;
+                color: #eaeaea;
+            }
+            html[data-theme='dark'] ::-webkit-scrollbar-track {
+                background: #111;
+            }
+            html[data-theme='dark'] ::-webkit-scrollbar-thumb {
+                background: #333;
+            }
+            html[data-theme='dark'] ::-webkit-scrollbar-thumb:hover {
+                background: #555;
+            }
+
+            /* Backgrounds */
+            html[data-theme='dark'] .bg-white,
+            html[data-theme='dark'] .bg-gray-50 {
+                background-color: #111111;
+            }
+            html[data-theme='dark'] header.bg-white\/80 {
+                background-color: rgba(17, 17, 17, 0.8);
+            }
+
+            /* Borders */
+            html[data-theme='dark'] .border-gray-200,
+            html[data-theme='dark'] .border-gray-300,
+            html[data-theme='dark'] .divide-gray-200 > :not([hidden]) ~ :not([hidden]) {
+                border-color: #333;
+            }
+
+            /* Text */
+            html[data-theme='dark'] .text-gray-900,
+            html[data-theme='dark'] .text-slate-900,
+            html[data-theme='dark'] .text-gray-800 {
+                color: #fff;
+            }
+
+            html[data-theme='dark'] .text-gray-600,
+            html[data-theme='dark'] .text-slate-600,
+            html[data-theme='dark'] .text-gray-700 {
+                color: #a1a1a1;
+            }
+
+            html[data-theme='dark'] .text-gray-500 {
+                color: #888;
+            }
+            html[data-theme='dark'] .text-gray-400 {
+                color: #666;
+            }
+
+            /* Links & Hovers */
+            html[data-theme='dark'] .hover\:bg-gray-100:hover,
+            html[data-theme='dark'] .hover\:bg-gray-50:hover {
+                background-color: #222;
+            }
+
+            html[data-theme='dark'] .hover\:text-gray-900:hover,
+            html[data-theme='dark'] .hover\:text-slate-900:hover {
+                color: #fff;
+            }
+
+            html[data-theme='dark'] .nav-link[data-active='true'] {
+                background-color: #222;
+                color: #fff;
+            }
+            html[data-theme='dark'] #sidebar-toggle:hover {
+                background-color: #222;
+            }
+
+            /* Buttons & Inputs */
+            html[data-theme='dark'] .bg-slate-900 {
+                background-color: #fff;
+                color: #111;
+            }
+            html[data-theme='dark'] .hover\:bg-slate-800:hover {
+                background-color: #e5e5e5;
+            }
+            html[data-theme='dark'] .text-white {
+                color: #111;
+            } /* For text on inverted buttons */
+
+            html[data-theme='dark'] #search-input {
+                background-color: #111;
+                border-color: #333;
+                color: #fff;
+            }
+            html[data-theme='dark'] #search-input::placeholder {
+                color: #666;
+            }
+            html[data-theme='dark'] #search-input:focus {
+                border-color: #fff;
+                ring-color: #fff;
+            }
+            html[data-theme='dark'] .tooltip {
+                background-color: #fff;
+                color: #111;
+            }
+
+            /* Badge Colors */
+            html[data-theme='dark'] .bg-blue-100 {
+                background-color: #1e40af;
+            }
+            html[data-theme='dark'] .text-blue-800 {
+                color: #dbeafe;
+            }
+            html[data-theme='dark'] .bg-green-100 {
+                background-color: #166534;
+            }
+            html[data-theme='dark'] .text-green-800 {
+                color: #dcfce7;
+            }
+            html[data-theme='dark'] .bg-purple-100 {
+                background-color: #581c87;
+            }
+            html[data-theme='dark'] .text-purple-800 {
+                color: #f3e8ff;
+            }
+            html[data-theme='dark'] .ring-white {
+                ring-color: #111;
+            }
+
+            /* ===== MOBILE NAV STYLES ===== */
+            .mobile-nav-link {
+                color: #6b7280; /* text-gray-500 */
+                transition: color 0.2s ease-in-out;
+            }
+            .mobile-nav-link.active,
+            .mobile-nav-link:hover {
+                color: #0f172a; /* text-slate-900 */
+            }
+            .mobile-nav-link.active svg,
+            .mobile-nav-link:hover svg {
+                stroke: #0f172a;
+            }
+            .mobile-nav-link svg {
+                stroke: #6b7280;
+                transition: stroke 0.2s ease-in-out;
+            }
+
+            html[data-theme='dark'] #mobile-nav {
+                background-color: #111111;
+                border-color: #333;
+            }
+            html[data-theme='dark'] .mobile-nav-link {
+                color: #a1a1a1;
+            }
+            html[data-theme='dark'] .mobile-nav-link svg {
+                stroke: #a1a1a1;
+            }
+            html[data-theme='dark'] .mobile-nav-link.active,
+            html[data-theme='dark'] .mobile-nav-link:hover {
+                color: #fff;
+            }
+            html[data-theme='dark'] .mobile-nav-link.active svg,
+            html[data-theme='dark'] .mobile-nav-link:hover svg {
+                stroke: #fff;
+            }
+
+            /* ===== MOBILE MENU MODAL STYLES (C6 BANK STYLE) ===== */
+            #mobile-menu-modal.open {
+                opacity: 1;
+                pointer-events: auto;
+            }
+            #mobile-menu-modal.open #mobile-menu-content {
+                transform: translateY(0);
+            }
+
+            .mobile-modal-card {
+                background-color: #f1f5f9; /* slate-100 */
+                border-radius: 0.75rem; /* rounded-xl */
+                padding: 0.75rem; /* p-3 */
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                transition: background-color 0.2s ease;
+                aspect-ratio: 1 / 1;
+            }
+            .mobile-modal-card:hover {
+                background-color: #e2e8f0; /* slate-200 */
+            }
+            .mobile-modal-card svg {
+                width: 1.75rem; /* w-7 */
+                height: 1.75rem; /* h-7 */
+                stroke: #334155; /* slate-700 */
+                margin-bottom: 0.5rem;
+            }
+            .mobile-modal-card span {
+                color: #334155; /* slate-700 */
+                font-size: 0.75rem; /* text-xs */
+                line-height: 1rem;
+                font-weight: 500; /* font-medium */
+            }
+
+            html[data-theme='dark'] #mobile-menu-content {
+                background-color: #000;
+                border-top: 1px solid #333;
+            }
+            html[data-theme='dark'] .mobile-modal-card {
+                background-color: #1c1c1c;
+            }
+            html[data-theme='dark'] .mobile-modal-card:hover {
+                background-color: #2a2a2a;
+            }
+            html[data-theme='dark'] .mobile-modal-card svg {
+                stroke: #e5e7eb;
+            } /* gray-200 */
+            html[data-theme='dark'] .mobile-modal-card span {
+                color: #e5e7eb;
+            } /* gray-200 */
+            html[data-theme='dark'] #mobile-menu-content h3 {
+                color: #fff;
+            }
+            html[data-theme='dark'] #mobile-menu-content h2 {
+                color: #fff;
+            }
+            html[data-theme='dark'] #mobile-menu-close-btn {
+                color: #fff;
+            }
+            html[data-theme='dark'] #mobile-menu-close-btn:hover {
+                background-color: #333;
+            }
+        </style>
+        <script>
+            // Aplica o tema imediatamente para evitar FOUC (Flash of Unstyled Content)
+            (function () {
+                const theme = localStorage.getItem('kaiser-admin-theme') || 'light';
+                if (theme === 'dark') {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                }
+            })();
+        </script>
+    </head>
+    <body class="text-gray-800 overflow-hidden">
+        <div class="flex h-screen">
+            <!-- Sidebar Navigation -->
+            <aside
+                id="sidebar"
+                class="w-64 bg-white border-r border-gray-200 flex-col hidden sm:flex shrink-0 relative transition-all duration-300 ease-in-out"
+            >
+                <!-- Sidebar Toggle Button -->
+                <button
+                    id="sidebar-toggle"
+                    class="absolute -right-3 top-[71px] bg-white border-2 border-gray-200 rounded-full w-7 h-7 flex items-center justify-center text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-all z-20"
+                >
+                    <svg
+                        id="sidebar-toggle-icon"
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="w-4 h-4 transition-transform duration-300"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="m15 18-6-6 6-6" />
+                    </svg>
+                </button>
+
+                <div
+                    id="logo-container"
+                    class="p-6 flex items-center space-x-3 border-b border-gray-200 h-[86px] shrink-0 overflow-hidden"
+                >
+                    <div class="bg-slate-900 p-2 rounded-lg shrink-0">
+                        <svg
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                d="M12 2L2 7L12 12L22 7L12 2Z"
+                                stroke="white"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            />
+                            <path
+                                d="M2 17L12 22L22 17"
+                                stroke="white"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            />
+                            <path
+                                d="M2 12L12 17L22 12"
+                                stroke="white"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            />
+                        </svg>
+                    </div>
+                    <h1 class="text-xl font-bold text-slate-900 sidebar-text truncate">
+                        KaiserAdmin
+                    </h1>
+                </div>
+                <nav
+                    id="sidebar-nav"
+                    class="flex-1 p-4 space-y-1.5 overflow-y-auto overflow-x-hidden"
+                >
+                    <span
+                        class="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider sidebar-text"
+                        >Menu</span
+                    >
+                    <a
+                        href="#"
+                        data-page="inicio"
+                        data-title="Dashboard"
+                        data-active="true"
+                        class="nav-link flex items-center px-4 py-2.5 text-sm font-medium text-gray-800 rounded-lg group relative"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="w-5 h-5 mr-3 shrink-0"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+                            <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                            <polyline points="9 22 9 12 15 12 15 22" />
+                        </svg>
+                        <span class="sidebar-text">Início</span>
+                        <span
+                            class="tooltip absolute left-full ml-4 px-3 py-1.5 bg-slate-800 text-white text-xs rounded-md opacity-0 invisible whitespace-nowrap transition-all transform -translate-x-2 pointer-events-none"
+                            >Início</span
+                        >
+                    </a>
+                    <a
+                        href="#"
+                        data-page="clientes"
+                        data-title="Clientes"
+                        class="nav-link flex items-center px-4 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-lg group relative"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="w-5 h-5 mr-3 shrink-0"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+                            <path
+                                d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Z"
+                            />
+                            <path d="M9 18h6" />
+                            <path d="M15 14h-6" />
+                            <path d="M15 10h-6" />
+                            <path d="M15 6h-6" />
+                        </svg>
+                        <span class="sidebar-text">Clientes</span>
+                        <span
+                            class="tooltip absolute left-full ml-4 px-3 py-1.5 bg-slate-800 text-white text-xs rounded-md opacity-0 invisible whitespace-nowrap transition-all transform -translate-x-2 pointer-events-none"
+                            >Clientes</span
+                        >
+                    </a>
+                    <a
+                        href="#"
+                        data-page="equipes"
+                        data-title="Equipes"
+                        class="nav-link flex items-center px-4 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-lg group relative"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="w-5 h-5 mr-3 shrink-0"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                            <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                        </svg>
+                        <span class="sidebar-text">Equipes</span>
+                        <span
+                            class="tooltip absolute left-full ml-4 px-3 py-1.5 bg-slate-800 text-white text-xs rounded-md opacity-0 invisible whitespace-nowrap transition-all transform -translate-x-2 pointer-events-none"
+                            >Equipes</span
+                        >
+                    </a>
+                    <a
+                        href="#"
+                        data-page="usuarios"
+                        data-title="Usuários"
+                        class="nav-link flex items-center px-4 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-lg group relative"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="w-5 h-5 mr-3 shrink-0"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                            <path d="m21.7 16.4-.9-.3" />
+                            <path d="m18.1 19.5.4-1" />
+                            <path d="m19.5 14.3.4 1" />
+                            <path d="m16.4 21.7-.3-.9" />
+                            <path d="m14.3 19.5 1 .4" />
+                            <path d="m21.7 18.1-.9.3" />
+                            <path d="m18.1 14.8.4 1" />
+                            <path d="m19.5 20.2 1-.4" />
+                            <circle cx="18.5" cy="18.5" r="2.5" />
+                        </svg>
+                        <span class="sidebar-text">Usuários</span>
+                        <span
+                            class="tooltip absolute left-full ml-4 px-3 py-1.5 bg-slate-800 text-white text-xs rounded-md opacity-0 invisible whitespace-nowrap transition-all transform -translate-x-2 pointer-events-none"
+                            >Usuários</span
+                        >
+                    </a>
+                </nav>
+                <div id="user-info-container" class="p-6 border-t border-gray-200 shrink-0">
+                    <div class="flex items-center">
+                        <img
+                            class="h-10 w-10 rounded-full object-cover shrink-0"
+                            src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+                            alt="User avatar"
+                        />
+                        <div class="ml-3 sidebar-text">
+                            <p class="text-sm font-semibold text-gray-900 truncate">Admin Geral</p>
+                            <p class="text-xs text-gray-500 truncate">super.admin@kaiser.com</p>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="flex-1 flex flex-col overflow-y-auto pb-16 sm:pb-0">
+                <header
+                    class="bg-white/80 backdrop-blur-sm sticky top-0 z-10 border-b border-gray-200"
+                >
+                    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                        <div class="flex h-16 items-center justify-between">
+                            <div class="flex-1 flex items-center gap-4">
+                                <h1
+                                    id="main-title"
+                                    class="text-2xl font-bold tracking-tight text-gray-900"
+                                >
+                                    Dashboard
+                                </h1>
+                            </div>
+                            <div class="flex items-center gap-2 sm:gap-4">
+                                <div class="relative hidden sm:block">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    >
+                                        <circle cx="11" cy="11" r="8" />
+                                        <path d="m21 21-4.3-4.3" />
+                                    </svg>
+                                    <input
+                                        id="search-input"
+                                        type="text"
+                                        placeholder="Buscar..."
+                                        class="w-full rounded-md border border-gray-200 bg-gray-50 py-2 pl-10 pr-4 text-sm focus:border-gray-900 focus:ring-gray-900"
+                                    />
+                                </div>
+                                <button
+                                    class="p-2 rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors relative"
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        class="w-5 h-5"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    >
+                                        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+                                        <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+                                    </svg>
+                                    <span
+                                        class="absolute top-1.5 right-1.5 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"
+                                    ></span>
+                                </button>
+                                <!-- THEME TOGGLE BUTTON -->
+                                <button
+                                    id="theme-toggle"
+                                    class="p-2 rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+                                    aria-label="Toggle theme"
+                                >
+                                    <svg
+                                        id="theme-icon-light"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        class="h-5 w-5"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    >
+                                        <circle cx="12" cy="12" r="5"></circle>
+                                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                                    </svg>
+                                    <svg
+                                        id="theme-icon-dark"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        class="h-5 w-5 hidden"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    >
+                                        <path
+                                            d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
+                                        ></path>
+                                    </svg>
+                                </button>
+                                <button
+                                    id="new-item-btn"
+                                    class="bg-slate-900 text-white flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all card-hover"
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        class="w-4 h-4"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    >
+                                        <path d="M5 12h14" />
+                                        <path d="M12 5v14" />
+                                    </svg>
+                                    <span id="new-item-btn-text" class="hidden sm:inline"
+                                        >Novo Cliente</span
+                                    >
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Page Content -->
+                <div class="p-4 sm:p-6 lg:p-8 flex-1">
+                    <div class="max-w-7xl mx-auto">
+                        <!-- INICIO PAGE -->
+                        <div id="page-inicio" class="page-content space-y-8">
+                            <div
+                                id="stats-cards-container"
+                                class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4"
+                            >
+                                <!-- Stats cards will be injected here by JS -->
+                            </div>
+                            <div class="bg-white p-6 rounded-2xl border border-gray-200">
+                                <div class="h-80"><canvas id="revenueChart"></canvas></div>
+                            </div>
+                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                                <div
+                                    id="recent-clients-container"
+                                    class="lg:col-span-2 bg-white p-6 rounded-2xl border border-gray-200"
+                                >
+                                    <div class="flex justify-between items-center mb-4">
+                                        <h2 class="text-lg font-semibold text-gray-900">
+                                            Clientes Recentes
+                                        </h2>
+                                        <a
+                                            href="#"
+                                            class="text-sm font-medium text-slate-600 hover:text-slate-900"
+                                            >Ver todos</a
+                                        >
+                                    </div>
+                                    <!-- Recent clients table will be injected here -->
+                                </div>
+
+                                <div
+                                    id="activity-feed-container"
+                                    class="bg-white p-6 rounded-2xl border border-gray-200"
+                                >
+                                    <h2 class="text-lg font-semibold text-gray-900 mb-4">
+                                        Atividade Recente
+                                    </h2>
+                                    <!-- Activity feed will be injected here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CLIENTES PAGE -->
+                        <div id="page-clientes" class="page-content hidden">
+                            <div class="bg-white p-6 rounded-2xl border border-gray-200">
+                                <div
+                                    class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4"
+                                >
+                                    <div>
+                                        <h2 class="text-xl font-bold text-gray-900">
+                                            Gerenciamento de Clientes
+                                        </h2>
+                                        <p class="text-sm text-gray-500 mt-1">
+                                            Visualize, adicione e gerencie todos os seus clientes.
+                                        </p>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <button
+                                            class="bg-white text-gray-700 flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold border border-gray-300 hover:bg-gray-50 transition-all"
+                                        >
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                width="24"
+                                                height="24"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                stroke-width="2"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                class="w-4 h-4"
+                                            >
+                                                <path
+                                                    d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
+                                                />
+                                                <polyline points="7 10 12 15 17 10" />
+                                                <line x1="12" x2="12" y1="15" y2="3" />
+                                            </svg>
+                                            Exportar
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th
+                                                    scope="col"
+                                                    class="w-1/3 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                                >
+                                                    Cliente
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                                >
+                                                    Plano
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                                >
+                                                    Status
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                                >
+                                                    Desde
+                                                </th>
+                                                <th scope="col" class="relative px-6 py-3">
+                                                    <span class="sr-only">Ações</span>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white divide-y divide-gray-200">
+                                            <tr>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="flex items-center">
+                                                        <div class="flex-shrink-0 h-10 w-10">
+                                                            <img
+                                                                class="h-10 w-10 rounded-full"
+                                                                src="https://i.pravatar.cc/150?u=delta"
+                                                                alt=""
+                                                            />
+                                                        </div>
+                                                        <div class="ml-4">
+                                                            <div
+                                                                class="text-sm font-medium text-gray-900"
+                                                            >
+                                                                Construtora Delta
+                                                            </div>
+                                                            <div class="text-sm text-gray-500">
+                                                                contato@delta.com
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span
+                                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800"
+                                                        >Enterprise</span
+                                                    >
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span
+                                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
+                                                        >Ativo</span
+                                                    >
+                                                </td>
+                                                <td
+                                                    class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                                                >
+                                                    25 de Set, 2025
+                                                </td>
+                                                <td
+                                                    class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
+                                                >
+                                                    <a
+                                                        href="#"
+                                                        class="text-slate-600 hover:text-slate-900"
+                                                        >Detalhes</a
+                                                    >
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="flex items-center">
+                                                        <div class="flex-shrink-0 h-10 w-10">
+                                                            <img
+                                                                class="h-10 w-10 rounded-full"
+                                                                src="https://i.pravatar.cc/150?u=alpha"
+                                                                alt=""
+                                                            />
+                                                        </div>
+                                                        <div class="ml-4">
+                                                            <div
+                                                                class="text-sm font-medium text-gray-900"
+                                                            >
+                                                                Alpha Engenharia
+                                                            </div>
+                                                            <div class="text-sm text-gray-500">
+                                                                financeiro@alpha.co
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span
+                                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800"
+                                                        >Pro</span
+                                                    >
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span
+                                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
+                                                        >Ativo</span
+                                                    >
+                                                </td>
+                                                <td
+                                                    class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                                                >
+                                                    24 de Set, 2025
+                                                </td>
+                                                <td
+                                                    class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
+                                                >
+                                                    <a
+                                                        href="#"
+                                                        class="text-slate-600 hover:text-slate-900"
+                                                        >Detalhes</a
+                                                    >
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="mt-6 flex items-center justify-between">
+                                    <span class="text-sm text-gray-600"
+                                        >Mostrando 1 a 10 de 128 clientes</span
+                                    >
+                                    <div class="flex items-center gap-2">
+                                        <button
+                                            class="px-3 py-1.5 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                                        >
+                                            Anterior
+                                        </button>
+                                        <button
+                                            class="px-3 py-1.5 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                                        >
+                                            Próximo
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- EQUIPES PAGE -->
+                        <div id="page-equipes" class="page-content hidden">
+                            <div class="bg-white p-6 rounded-2xl border border-gray-200">
+                                <div class="flex justify-between items-center mb-6">
+                                    <div>
+                                        <h2 class="text-xl font-bold text-gray-900">Equipes</h2>
+                                        <p class="text-sm text-gray-500 mt-1">
+                                            Gerencie suas equipes e membros.
+                                        </p>
+                                    </div>
+                                    <button
+                                        class="bg-slate-900 text-white flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition-all"
+                                    >
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            class="w-4 h-4"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            stroke-width="2"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                        >
+                                            <path d="M5 12h14" />
+                                            <path d="M12 5v14" />
+                                        </svg>
+                                        Criar Equipe
+                                    </button>
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    <div
+                                        class="border border-gray-200 rounded-xl p-5 hover:shadow-lg transition-shadow card-hover"
+                                    >
+                                        <div class="flex justify-between items-center mb-4">
+                                            <h3 class="font-bold text-lg text-gray-900">
+                                                Engenharia
+                                            </h3>
+                                            <span
+                                                class="text-xs font-semibold bg-blue-100 text-blue-800 px-2 py-1 rounded-full"
+                                                >8 Membros</span
+                                            >
+                                        </div>
+                                        <div class="flex -space-x-2 overflow-hidden mb-4">
+                                            <img
+                                                class="inline-block h-8 w-8 rounded-full ring-2 ring-white"
+                                                src="https://i.pravatar.cc/150?u=eng1"
+                                                alt=""
+                                            />
+                                            <img
+                                                class="inline-block h-8 w-8 rounded-full ring-2 ring-white"
+                                                src="https://i.pravatar.cc/150?u=eng2"
+                                                alt=""
+                                            />
+                                            <img
+                                                class="inline-block h-8 w-8 rounded-full ring-2 ring-white"
+                                                src="https://i.pravatar.cc/150?u=eng3"
+                                                alt=""
+                                            />
+                                            <div
+                                                class="flex items-center justify-center h-8 w-8 rounded-full bg-gray-200 text-xs font-medium text-gray-600 ring-2 ring-white"
+                                            >
+                                                +5
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="flex items-center space-x-2 text-sm text-gray-600"
+                                        >
+                                            <p>
+                                                <span class="font-semibold">Líder:</span> Carlos
+                                                Silva
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="border border-gray-200 rounded-xl p-5 hover:shadow-lg transition-shadow card-hover"
+                                    >
+                                        <div class="flex justify-between items-center mb-4">
+                                            <h3 class="font-bold text-lg text-gray-900">
+                                                Financeiro
+                                            </h3>
+                                            <span
+                                                class="text-xs font-semibold bg-green-100 text-green-800 px-2 py-1 rounded-full"
+                                                >4 Membros</span
+                                            >
+                                        </div>
+                                        <div class="flex -space-x-2 overflow-hidden mb-4">
+                                            <img
+                                                class="inline-block h-8 w-8 rounded-full ring-2 ring-white"
+                                                src="https://i.pravatar.cc/150?u=fin1"
+                                                alt=""
+                                            />
+                                            <img
+                                                class="inline-block h-8 w-8 rounded-full ring-2 ring-white"
+                                                src="https://i.pravatar.cc/150?u=fin2"
+                                                alt=""
+                                            />
+                                            <img
+                                                class="inline-block h-8 w-8 rounded-full ring-2 ring-white"
+                                                src="https://i.pravatar.cc/150?u=fin3"
+                                                alt=""
+                                            />
+                                            <img
+                                                class="inline-block h-8 w-8 rounded-full ring-2 ring-white"
+                                                src="https://i.pravatar.cc/150?u=fin4"
+                                                alt=""
+                                            />
+                                        </div>
+                                        <div
+                                            class="flex items-center space-x-2 text-sm text-gray-600"
+                                        >
+                                            <p>
+                                                <span class="font-semibold">Líder:</span> Ana
+                                                Pereira
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- USUARIOS PAGE -->
+                        <div id="page-usuarios" class="page-content hidden">
+                            <div class="bg-white p-6 rounded-2xl border border-gray-200">
+                                <div
+                                    class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4"
+                                >
+                                    <div>
+                                        <h2 class="text-xl font-bold text-gray-900">
+                                            Gerenciamento de Usuários
+                                        </h2>
+                                        <p class="text-sm text-gray-500 mt-1">
+                                            Adicione, edite e gerencie as permissões dos usuários.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th
+                                                    scope="col"
+                                                    class="w-1/3 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                                >
+                                                    Usuário
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                                >
+                                                    Cargo
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                                >
+                                                    Status
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                                >
+                                                    Último Acesso
+                                                </th>
+                                                <th scope="col" class="relative px-6 py-3">
+                                                    <span class="sr-only">Ações</span>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white divide-y divide-gray-200">
+                                            <tr>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="flex items-center">
+                                                        <div class="flex-shrink-0 h-10 w-10">
+                                                            <img
+                                                                class="h-10 w-10 rounded-full"
+                                                                src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+                                                                alt=""
+                                                            />
+                                                        </div>
+                                                        <div class="ml-4">
+                                                            <div
+                                                                class="text-sm font-medium text-gray-900"
+                                                            >
+                                                                Admin Geral
+                                                            </div>
+                                                            <div class="text-sm text-gray-500">
+                                                                super.admin@kaiser.com
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td
+                                                    class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                                                >
+                                                    Super Admin
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span
+                                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
+                                                        >Ativo</span
+                                                    >
+                                                </td>
+                                                <td
+                                                    class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                                                >
+                                                    Hoje, 11:04
+                                                </td>
+                                                <td
+                                                    class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
+                                                >
+                                                    <a
+                                                        href="#"
+                                                        class="text-slate-600 hover:text-slate-900"
+                                                        >Editar</a
+                                                    >
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="flex items-center">
+                                                        <div class="flex-shrink-0 h-10 w-10">
+                                                            <img
+                                                                class="h-10 w-10 rounded-full"
+                                                                src="https://i.pravatar.cc/150?u=carlos"
+                                                                alt=""
+                                                            />
+                                                        </div>
+                                                        <div class="ml-4">
+                                                            <div
+                                                                class="text-sm font-medium text-gray-900"
+                                                            >
+                                                                Carlos Silva
+                                                            </div>
+                                                            <div class="text-sm text-gray-500">
+                                                                carlos.silva@kaiser.com
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td
+                                                    class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                                                >
+                                                    Engenheiro Chefe
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span
+                                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
+                                                        >Ativo</span
+                                                    >
+                                                </td>
+                                                <td
+                                                    class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                                                >
+                                                    Ontem, 15:30
+                                                </td>
+                                                <td
+                                                    class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
+                                                >
+                                                    <a
+                                                        href="#"
+                                                        class="text-slate-600 hover:text-slate-900"
+                                                        >Editar</a
+                                                    >
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Mobile Bottom Navigation -->
+        <nav
+            id="mobile-nav"
+            class="sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around items-center h-16 z-30"
+        >
+            <a
+                href="#"
+                data-page="inicio"
+                data-title="Dashboard"
+                class="mobile-nav-link flex flex-col items-center justify-center text-center w-full h-full"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-6 h-6 mb-1"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                    <polyline points="9 22 9 12 15 12 15 22" />
+                </svg>
+                <span class="text-xs font-medium">Início</span>
+            </a>
+            <a
+                href="#"
+                data-page="clientes"
+                data-title="Clientes"
+                class="mobile-nav-link flex flex-col items-center justify-center text-center w-full h-full"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-6 h-6 mb-1"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <path
+                        d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Z"
+                    />
+                    <path d="M9 18h6" />
+                    <path d="M15 14h-6" />
+                    <path d="M15 10h-6" />
+                    <path d="M15 6h-6" />
+                </svg>
+                <span class="text-xs font-medium">Clientes</span>
+            </a>
+            <a
+                href="#"
+                data-page="equipes"
+                data-title="Equipes"
+                class="mobile-nav-link flex flex-col items-center justify-center text-center w-full h-full"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-6 h-6 mb-1"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+                <span class="text-xs font-medium">Equipes</span>
+            </a>
+            <a
+                href="#"
+                data-page="usuarios"
+                data-title="Usuários"
+                class="mobile-nav-link flex flex-col items-center justify-center text-center w-full h-full"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-6 h-6 mb-1"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="m21.7 16.4-.9-.3" />
+                    <path d="m18.1 19.5.4-1" />
+                    <path d="m19.5 14.3.4 1" />
+                    <path d="m16.4 21.7-.3-.9" />
+                    <path d="m14.3 19.5 1 .4" />
+                    <path d="m21.7 18.1-.9.3" />
+                    <path d="m18.1 14.8.4 1" />
+                    <path d="m19.5 20.2 1-.4" />
+                    <circle cx="18.5" cy="18.5" r="2.5" />
+                </svg>
+                <span class="text-xs font-medium">Usuários</span>
+            </a>
+            <button
+                id="mobile-menu-open-btn"
+                class="mobile-nav-link flex flex-col items-center justify-center text-center w-full h-full"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-6 h-6 mb-1"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+                <span class="text-xs font-medium">Menu</span>
+            </button>
+        </nav>
+
+        <!-- Mobile Menu Modal -->
+        <div
+            id="mobile-menu-modal"
+            class="fixed inset-0 z-40 sm:hidden flex flex-col justify-end pointer-events-none opacity-0 transition-opacity duration-300"
+        >
+            <!-- Overlay -->
+            <div id="mobile-menu-overlay" class="absolute inset-0 bg-black bg-opacity-50"></div>
+            <!-- Content -->
+            <div
+                id="mobile-menu-content"
+                class="relative bg-white rounded-t-2xl p-4 transition-transform duration-300 transform translate-y-full pb-6"
+            >
+                <!-- Header -->
+                <div class="flex justify-between items-center mb-6 px-2">
+                    <h2 class="font-bold text-lg text-gray-900">Menu</h2>
+                    <button
+                        id="mobile-menu-close-btn"
+                        class="p-1 rounded-full text-gray-500 hover:bg-gray-100"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="w-6 h-6"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="space-y-8">
+                    <!-- Ações Rápidas Section -->
+                    <div>
+                        <h3 class="px-2 mb-3 text-base font-semibold text-gray-800">
+                            Ações Rápidas
+                        </h3>
+                        <div class="grid grid-cols-3 gap-3 text-center">
+                            <a href="#" class="mobile-modal-card">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                                    <circle cx="9" cy="7" r="4" />
+                                    <line x1="19" x2="19" y1="8" y2="14" />
+                                    <line x1="22" x2="16" y1="11" y2="11" />
+                                </svg>
+                                <span>Novo Cliente</span>
+                            </a>
+                            <a href="#" class="mobile-modal-card">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                </svg>
+                                <span>Nova Tarefa</span>
+                            </a>
+                            <a href="#" class="mobile-modal-card">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <path
+                                        d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"
+                                    ></path>
+                                </svg>
+                                <span>Anexar Arquivo</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Navegação Section -->
+                    <div>
+                        <h3 class="px-2 mb-3 text-base font-semibold text-gray-800">Navegação</h3>
+                        <div id="mobile-modal-nav" class="grid grid-cols-3 gap-3 text-center">
+                            <a
+                                href="#"
+                                data-page="inicio"
+                                data-title="Dashboard"
+                                class="mobile-modal-card"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                                    <polyline points="9 22 9 12 15 12 15 22" />
+                                </svg>
+                                <span>Início</span>
+                            </a>
+                            <a
+                                href="#"
+                                data-page="clientes"
+                                data-title="Clientes"
+                                class="mobile-modal-card"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <path
+                                        d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Z"
+                                    />
+                                    <path d="M9 18h6" />
+                                    <path d="M15 14h-6" />
+                                    <path d="M15 10h-6" />
+                                    <path d="M15 6h-6" />
+                                </svg>
+                                <span>Clientes</span>
+                            </a>
+                            <a
+                                href="#"
+                                data-page="equipes"
+                                data-title="Equipes"
+                                class="mobile-modal-card"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                                    <circle cx="9" cy="7" r="4" />
+                                    <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                </svg>
+                                <span>Equipes</span>
+                            </a>
+                            <a
+                                href="#"
+                                data-page="usuarios"
+                                data-title="Usuários"
+                                class="mobile-modal-card"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                                    <circle cx="9" cy="7" r="4" />
+                                    <path d="m21.7 16.4-.9-.3" />
+                                    <path d="m18.1 19.5.4-1" />
+                                    <path d="m19.5 14.3.4 1" />
+                                    <path d="m16.4 21.7-.3-.9" />
+                                    <path d="m14.3 19.5 1 .4" />
+                                    <path d="m21.7 18.1-.9.3" />
+                                    <path d="m18.1 14.8.4 1" />
+                                    <path d="m19.5 20.2 1-.4" />
+                                    <circle cx="18.5" cy="18.5" r="2.5" />
+                                </svg>
+                                <span>Usuários</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            window.onload = () => {
+                // --- General Elements ---
+                const sidebar = document.getElementById('sidebar');
+                const sidebarToggle = document.getElementById('sidebar-toggle');
+                const sidebarToggleIcon = document.getElementById('sidebar-toggle-icon');
+                const sidebarNav = document.getElementById('sidebar-nav');
+                const pages = document.querySelectorAll('.page-content');
+                const mainTitle = document.getElementById('main-title');
+                const sidebarTexts = document.querySelectorAll('.sidebar-text');
+                const navLinks = document.querySelectorAll('.nav-link');
+                const logoContainer = document.getElementById('logo-container');
+                const userInfoContainer = document.getElementById('user-info-container');
+                const newItemBtnText = document.getElementById('new-item-btn-text');
+
+                // --- Theme Switcher Elements ---
+                const themeToggleButton = document.getElementById('theme-toggle');
+                const themeIconLight = document.getElementById('theme-icon-light');
+                const themeIconDark = document.getElementById('theme-icon-dark');
+                let revenueChartInstance = null; // To hold the chart instance
+
+                // --- Mobile Nav & Menu Elements ---
+                const mobileNav = document.getElementById('mobile-nav');
+                const mobileNavLinks = mobileNav.querySelectorAll('.mobile-nav-link');
+                const mobileMenuButton = document.getElementById('mobile-menu-open-btn');
+                const mobileMenuModal = document.getElementById('mobile-menu-modal');
+                const mobileMenuCloseBtn = document.getElementById('mobile-menu-close-btn');
+                const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+                const mobileModalNav = document.getElementById('mobile-modal-nav');
+
+                // --- Theme Switcher Logic ---
+                function updateThemeUI(theme) {
+                    if (theme === 'dark') {
+                        themeIconLight.classList.add('hidden');
+                        themeIconDark.classList.remove('hidden');
+                        document.documentElement.setAttribute('data-theme', 'dark');
+                    } else {
+                        themeIconLight.classList.remove('hidden');
+                        themeIconDark.classList.add('hidden');
+                        document.documentElement.removeAttribute('data-theme');
+                    }
+                    // Redraw chart with new theme colors
+                    if (revenueChartInstance) {
+                        revenueChartInstance.destroy();
+                    }
+                    createRevenueChart();
+                }
+
+                // Set initial theme state on load
+                const currentTheme = localStorage.getItem('kaiser-admin-theme') || 'light';
+                updateThemeUI(currentTheme);
+
+                themeToggleButton.addEventListener('click', () => {
+                    const newTheme = document.documentElement.hasAttribute('data-theme')
+                        ? 'light'
+                        : 'dark';
+                    localStorage.setItem('kaiser-admin-theme', newTheme);
+                    updateThemeUI(newTheme);
+                });
+
+                // --- Sidebar Toggle Logic ---
+                sidebarToggle.addEventListener('click', () => {
+                    sidebar.classList.toggle('w-64');
+                    sidebar.classList.toggle('w-20');
+                    const isNowCollapsed = sidebar.classList.contains('w-20');
+
+                    sidebarToggleIcon.classList.toggle('rotate-180');
+
+                    sidebarTexts.forEach((text) => {
+                        text.classList.toggle('opacity-0');
+                        text.classList.toggle('w-0');
+                    });
+
+                    navLinks.forEach((link) => {
+                        link.classList.toggle('justify-center');
+                        const icon = link.querySelector('svg');
+                        if (isNowCollapsed) {
+                            icon.classList.remove('mr-3');
+                            link.classList.remove('px-4');
+                            link.classList.add('px-3');
+                        } else {
+                            icon.classList.add('mr-3');
+                            link.classList.add('px-4');
+                            link.classList.remove('px-3');
+                        }
+                    });
+
+                    logoContainer.classList.toggle('justify-center');
+
+                    if (isNowCollapsed) {
+                        userInfoContainer.querySelector('.flex').classList.add('justify-center');
+                    } else {
+                        userInfoContainer.querySelector('.flex').classList.remove('justify-center');
+                    }
+
+                    if (isNowCollapsed) {
+                        sidebar.classList.add('overflow-visible');
+                        sidebarNav.classList.remove('overflow-y-auto', 'overflow-x-hidden');
+                    } else {
+                        sidebar.classList.remove('overflow-visible');
+                        sidebarNav.classList.add('overflow-y-auto', 'overflow-x-hidden');
+                    }
+                });
+
+                // --- UNIFIED NAVIGATION LOGIC ---
+                function handleNavigation(pageId, pageTitle) {
+                    pages.forEach((page) => {
+                        page.id === `page-${pageId}`
+                            ? page.classList.remove('hidden')
+                            : page.classList.add('hidden');
+                    });
+                    mainTitle.textContent = pageTitle;
+
+                    const btnTextSpan = document
+                        .getElementById('new-item-btn-text')
+                        .parentNode.querySelector('span');
+
+                    if (pageId === 'clientes') {
+                        btnTextSpan.textContent = 'Novo Cliente';
+                    } else if (pageId === 'equipes') {
+                        btnTextSpan.textContent = 'Nova Equipe';
+                    } else if (pageId === 'usuarios') {
+                        btnTextSpan.textContent = 'Novo Usuário';
+                    } else {
+                        btnTextSpan.textContent = 'Novo Cliente';
+                    }
+                }
+
+                function setActiveLink(pageId) {
+                    navLinks.forEach((link) => {
+                        link.dataset.active = link.dataset.page === pageId ? 'true' : 'false';
+                    });
+                    mobileNav.querySelectorAll('a').forEach((link) => {
+                        if (link.dataset.page === pageId) {
+                            link.classList.add('active');
+                        } else {
+                            link.classList.remove('active');
+                        }
+                    });
+                }
+
+                function navigationClickListener(event) {
+                    const link = event.target.closest('a[data-page]');
+                    if (!link) return;
+                    event.preventDefault();
+
+                    const pageId = link.dataset.page;
+                    const pageTitle = link.dataset.title;
+
+                    handleNavigation(pageId, pageTitle);
+                    setActiveLink(pageId);
+
+                    // Close modal if a link inside it was clicked
+                    if (mobileMenuModal.classList.contains('open')) {
+                        closeMobileMenu();
+                    }
+                }
+
+                sidebarNav.addEventListener('click', navigationClickListener);
+                mobileNav.addEventListener('click', navigationClickListener);
+                mobileModalNav.addEventListener('click', navigationClickListener);
+
+                // Set initial state based on sidebar
+                const initialActiveLink = sidebarNav.querySelector('.nav-link[data-active="true"]');
+                if (initialActiveLink) {
+                    setActiveLink(initialActiveLink.dataset.page);
+                }
+
+                // --- MOBILE MENU MODAL LOGIC ---
+                function openMobileMenu() {
+                    mobileMenuModal.classList.add('open');
+                }
+                function closeMobileMenu() {
+                    mobileMenuModal.classList.remove('open');
+                }
+
+                mobileMenuButton.addEventListener('click', openMobileMenu);
+                mobileMenuCloseBtn.addEventListener('click', closeMobileMenu);
+                mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+
+                // --- Chart.js Revenue Chart Logic ---
+                function createRevenueChart() {
+                    const ctx = document.getElementById('revenueChart');
+                    if (!ctx) return;
+
+                    const isDarkMode = document.documentElement.hasAttribute('data-theme');
+                    const gridColor = isDarkMode
+                        ? 'rgba(255, 255, 255, 0.1)'
+                        : 'rgba(0, 0, 0, 0.1)';
+                    const textColor = isDarkMode ? '#EAEAEA' : '#6b7280';
+                    const lineColor = isDarkMode ? '#FFFFFF' : '#0f172a';
+
+                    revenueChartInstance = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: ['Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set'],
+                            datasets: [
+                                {
+                                    label: 'Receita Mensal',
+                                    data: [25200, 31500, 29000, 35100, 38500, 45800],
+                                    borderColor: lineColor,
+                                    backgroundColor: isDarkMode
+                                        ? 'rgba(255, 255, 255, 0.1)'
+                                        : 'rgba(15, 23, 42, 0.1)',
+                                    fill: true,
+                                    tension: 0.4,
+                                    pointBackgroundColor: lineColor,
+                                    pointBorderColor: isDarkMode ? '#111' : '#fff',
+                                    pointHoverBackgroundColor: isDarkMode ? '#111' : '#fff',
+                                    pointHoverBorderColor: lineColor,
+                                },
+                            ],
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: false,
+                                    ticks: {
+                                        color: textColor,
+                                        callback: function (value) {
+                                            return 'R$ ' + value / 1000 + 'k';
+                                        },
+                                    },
+                                    grid: {
+                                        color: gridColor,
+                                    },
+                                },
+                                x: {
+                                    ticks: {
+                                        color: textColor,
+                                    },
+                                    grid: {
+                                        display: false,
+                                    },
+                                },
+                            },
+                            plugins: { legend: { display: false } },
+                            interaction: { intersect: false, mode: 'index' },
+                        },
+                    });
+                }
+
+                // --- DYNAMIC CONTENT INJECTION FOR DASHBOARD ---
+                function populateDashboard() {
+                    const statsContainer = document.getElementById('stats-cards-container');
+                    const clientsContainer = document.getElementById('recent-clients-container');
+                    const activityContainer = document.getElementById('activity-feed-container');
+
+                    if (!statsContainer || !clientsContainer || !activityContainer) return;
+
+                    statsContainer.innerHTML = `
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 card-hover"><div class="flex items-center justify-between"><p class="text-sm font-medium text-gray-500">Receita (MRR)</p><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><p class="mt-2 text-3xl font-bold text-gray-900">R$ 45,8k</p><p class="text-xs text-green-600 flex items-center mt-1"><svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7-7 7 7"/></svg>+2.1%</p></div>
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 card-hover"><div class="flex items-center justify-between"><p class="text-sm font-medium text-gray-500">Novos Clientes</p><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Z"/><path d="M9 18h6"/></svg></div><p class="mt-2 text-3xl font-bold text-gray-900">32</p><p class="text-xs text-green-600 flex items-center mt-1"><svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7-7 7 7"/></svg>+12.5%</p></div>
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 card-hover"><div class="flex items-center justify-between"><p class="text-sm font-medium text-gray-500">Usuários Ativos</p><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-purple-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><p class="mt-2 text-3xl font-bold text-gray-900">1,204</p><p class="text-xs text-gray-500 mt-1">Total no sistema</p></div>
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 card-hover"><div class="flex items-center justify-between"><p class="text-sm font-medium text-gray-500">Tickets de Suporte</p><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-yellow-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 18a2.5 2.5 0 0 0-3.51-3.51L8.49 10.01a2.5 2.5 0 0 0 3.51 3.51Z"/><path d="m12 2 3.1 3.1a2.5 2.5 0 0 1 0 3.5L12 12l-3.1-3.1a2.5 2.5 0 0 1 0-3.5L12 2"/></svg></div><p class="mt-2 text-3xl font-bold text-gray-900">12</p><p class="text-xs text-gray-500 mt-1">8 abertos</p></div>`;
+
+                    clientsContainer.innerHTML += `<div class="overflow-x-auto">
+                                             <table class="min-w-full divide-y divide-gray-200">
+                                                 <thead class="bg-gray-50">
+                                                     <tr>
+                                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
+                                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Plano</th>
+                                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                                     </tr>
+                                                 </thead>
+                                                 <tbody class="bg-white divide-y divide-gray-200">
+                                                     <tr class="hover:bg-gray-50">
+                                                         <td class="px-6 py-4 whitespace-nowrap"><div class="flex items-center"><div class="flex-shrink-0 h-10 w-10"><img class="h-10 w-10 rounded-full" src="https://i.pravatar.cc/150?u=delta" alt=""></div><div class="ml-4"><div class="text-sm font-medium text-gray-900">Construtora Delta</div></div></div></td>
+                                                         <td class="px-6 py-4 whitespace-nowrap"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Enterprise</span></td>
+                                                         <td class="px-6 py-4 whitespace-nowrap"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Ativo</span></td>
+                                                     </tr>
+                                                     <tr class="hover:bg-gray-50">
+                                                         <td class="px-6 py-4 whitespace-nowrap"><div class="flex items-center"><div class="flex-shrink-0 h-10 w-10"><img class="h-10 w-10 rounded-full" src="https://i.pravatar.cc/150?u=alpha" alt=""></div><div class="ml-4"><div class="text-sm font-medium text-gray-900">Alpha Engenharia</div></div></div></td>
+                                                         <td class="px-6 py-4 whitespace-nowrap"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">Pro</span></td>
+                                                         <td class="px-6 py-4 whitespace-nowrap"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Ativo</span></td>
+                                                     </tr>
+                                                 </tbody>
+                                             </table>
+                                         </div>`;
+
+                    activityContainer.innerHTML += `<ul role="list" class="space-y-4">
+                                             <li class="flex items-start gap-4"><div class="flex-shrink-0 bg-blue-100 rounded-full p-2"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg></div><div class="flex-1"><p class="text-sm text-gray-800"><span class="font-semibold">Novo usuário</span> cadastrado.</p><p class="text-xs text-gray-400">Hoje, 10:30</p></div></li>
+                                             <li class="flex items-start gap-4"><div class="flex-shrink-0 bg-green-100 rounded-full p-2"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4"/><path d="M12 16V8"/></svg></div><div class="flex-1"><p class="text-sm text-gray-800"><span class="font-semibold">Upgrade</span> para o plano Pro.</p><p class="text-xs text-gray-400">Ontem, 17:45</p></div></li>
+                                             <li class="flex items-start gap-4"><div class="flex-shrink-0 bg-red-100 rounded-full p-2"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-red-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></div><div class="flex-1"><p class="text-sm text-gray-800"><span class="font-semibold">Fatura #INV-2025-015</span> está atrasada.</p><p class="text-xs text-gray-400">24 de Set, 2025</p></div></li>
+                                        </ul>`;
+                }
+                populateDashboard();
+            };
+        </script>
+    </body>
+</html>
